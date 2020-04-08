@@ -8,7 +8,8 @@
 
 ## Introduction
 
-This repo contains tests for the [Skyr URL](https://github.com/cpp-netlib/url) project.
+This repo contains [web platform tests](https://github.com/web-platform-tests/wpt) for the
+[Skyr URL](https://github.com/cpp-netlib/url) project.
 
 ## Building and running the tests
 

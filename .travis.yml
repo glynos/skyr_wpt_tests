@@ -1,0 +1,64 @@
+sudo: false
+
+language: c++
+dist: bionic
+
+compiler:
+  - clang
+os:
+  - linux
+
+env:
+  global:
+    - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps_"
+    - INSTALL_DIR="${TRAVIS_BUILD_DIR}/install"
+  jobs:
+    - SHARED_LIB=ON BUILD_TYPE=Release
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+      - sourceline: 'ppa:ubuntu-toolchain-r/test'
+    packages:
+      - clang-9
+      - cmake
+      - ninja-build
+
+before_install:
+  - echo ${DEPS_DIR}
+  - mkdir -p ${DEPS_DIR}
+  - pushd ${DEPS_DIR}
+  - echo ${TRAVIS_OS_NAME}
+  - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-Linux-x86_64.tar.gz"
+  - mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+  - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+  - which ninja || sudo apt-get install ninja-build
+  - popd
+  - echo ${INSTALL_DIR}
+  - mkdir -p ${INSTALL_DIR}
+  - echo ${CXX}
+  - ${CXX} --version
+
+cache:
+  directories:
+    - ${DEPS_DIR}/vcpkg/installed
+
+before_script:
+  - mkdir _build
+  - cmake
+    -B_build
+    -GNinja
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+    -DBUILD_SHARED_LIBS=${SHARED_LIB}
+    -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake
+    -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}
+    .
+
+script:
+  - cmake --build _build
+  - cmake --build _build --target test
+
+after_failure:
+    - cat _build/Testing/Temporary/LastTest.log
