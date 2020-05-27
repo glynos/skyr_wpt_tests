@@ -5,6 +5,9 @@
 [![License](
     https://img.shields.io/badge/license-boost-blue.svg "License")](
     https://github.com/cpp-netlib/url/blob/master/LICENSE_1_0.txt)
+[![Travis Build Status](
+    https://travis-ci.org/glynos/skyr_wpt_tests.svg?branch=master "Build Status")](
+    https://travis-ci.org/glynos/skyr_wpt_tests)
 
 ## Introduction
 

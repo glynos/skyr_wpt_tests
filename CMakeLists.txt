@@ -35,9 +35,8 @@ set(skyr_BUILD_DOCS OFF)
 FetchContent_Declare(
         skyr-url
         GIT_REPOSITORY https://github.com/cpp-netlib/url
-        GIT_TAG v1.5.2
+        GIT_TAG master
 )
-FetchContent_MakeAvailable(skyr-url)
 
 message(STATUS "Fetching platform test data")
 FetchContent_Declare(
@@ -45,6 +44,8 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/web-platform-tests/wpt
         GIT_TAG ${skyr_WPT_TAG}
 )
-FetchContent_MakeAvailable(wpt)
 
+FetchContent_MakeAvailable(skyr-url wpt)
+
+enable_testing()
 add_subdirectory(tests)
