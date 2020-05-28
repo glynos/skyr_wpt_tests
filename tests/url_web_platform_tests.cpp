@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 namespace {
 struct test_case_data {
-  test_case_data(json object) {
+  explicit test_case_data(json object) {
     input = object["input"].get<std::string>();
     base = object["base"].get<std::string>();
 

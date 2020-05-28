@@ -28,7 +28,9 @@ endfunction()
 foreach (
         file_name
         url_web_platform_tests.cpp
-        url_wpt_setter_tests.cpp)
+        url_wpt_setter_tests.cpp
+        to_ascii_tests.cpp
+)
     skyr_create_test(${file_name} ${PROJECT_BINARY_DIR}/tests test)
     add_test(${test} ${PROJECT_BINARY_DIR}/tests/${test})
 endforeach ()
