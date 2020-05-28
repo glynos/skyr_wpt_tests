@@ -13,7 +13,7 @@ env:
     - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps_"
     - INSTALL_DIR="${TRAVIS_BUILD_DIR}/install"
   jobs:
-    - SHARED_LIB=ON BUILD_TYPE=Release
+    - BUILD_TYPE=Release
 
 addons:
   apt:
@@ -41,6 +41,30 @@ before_install:
   - echo ${CXX}
   - ${CXX} --version
 
+install:
+  # Homebrew's llvm package doesn't ship a versioned clang++ binary, so the values
+  # below don't work on macOS. Fortunately, the path change above makes the
+  # default values (clang and clang++) resolve to the correct compiler on macOS.
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+    if [ "$CXX" = "clang++" ]; then export CXX="clang++-9" CC="clang-9"; fi;
+    fi
+  - echo ${CC}
+  - echo ${CXX}
+  - ${CXX} --version
+  - cmake --version
+  # Update dependencies directory
+  - mkdir -p ${DEPS_DIR}/vcpkg
+  - pushd ${DEPS_DIR}/vcpkg
+  - git init
+  - git remote add origin https://github.com/Microsoft/vcpkg.git
+  - git fetch origin master
+  - git checkout -b master origin/master
+  - export
+  - ./bootstrap-vcpkg.sh
+  - ./vcpkg install tl-expected catch2 nlohmann-json fmt
+  - popd
+
+
 cache:
   directories:
     - ${DEPS_DIR}/vcpkg/installed
@@ -51,7 +75,7 @@ before_script:
     -B_build
     -GNinja
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-    -DBUILD_SHARED_LIBS=${SHARED_LIB}
+    -DBUILD_SHARED_LIBS=OFF
     -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake
     -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}
     .
