@@ -16,8 +16,8 @@
 using json = nlohmann::json;
 
 namespace {
-struct test_case {
-  test_case(json object) {
+struct test_case_data {
+  test_case_data(json object) {
     input = object["input"].get<std::string>();
     base = object["base"].get<std::string>();
 
@@ -57,7 +57,7 @@ struct test_case {
   std::string hash;
 };
 
-class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
+class TestCaseGenerator : public Catch::Generators::IGenerator<test_case_data> {
  public:
   explicit TestCaseGenerator(
       const std::string &filename, bool failure) {
@@ -67,9 +67,9 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
 
     for (auto &&test_case_object : tests) {
       if (!test_case_object.is_string()) {
-      auto test_case_data = test_case{test_case_object};
-        if (failure == test_case_data.failure) {
-          test_case_data_.emplace_back(test_case_data);
+      auto data = test_case_data{test_case_object};
+        if (failure == data.failure) {
+          test_case_data_.emplace_back(data);
         }
       }
     }
@@ -77,7 +77,7 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
     it_ = begin(test_case_data_);
   }
 
-  [[nodiscard]] const test_case &get() const override {
+  [[nodiscard]] const test_case_data &get() const override {
     assert(it_ != test_case_data_.end());
     return *it_;
   }
@@ -89,21 +89,20 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
   }
 
  private:
-  std::vector<test_case> test_case_data_;
-  std::vector<test_case>::const_iterator it_;
+  std::vector<test_case_data> test_case_data_;
+  std::vector<test_case_data>::const_iterator it_;
 };
 
-Catch::Generators::GeneratorWrapper<test_case> test_case_(
+auto test_case(
     const std::string &filename, bool failure) {
-  return Catch::Generators::GeneratorWrapper<test_case>(
-      std::unique_ptr<Catch::Generators::IGenerator<test_case>>(
-          new TestCaseGenerator(filename, failure)));
+  return Catch::Generators::GeneratorWrapper<test_case_data>(
+      std::make_unique<TestCaseGenerator>(filename, failure));
 }
 } // namespace
 
 
 TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
-  auto test_case_data = GENERATE(test_case_("urltestdata.json", false));
+  auto test_case_data = GENERATE(test_case("urltestdata.json", false));
 
   SECTION("parse_using_constructor") {
     auto instance = skyr::url(
@@ -123,7 +122,7 @@ TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
 }
 
 TEST_CASE("test_parse_urls_using_base_urls_failures", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case_("urltestdata.json", true));
+  auto test_case_data = GENERATE(test_case("urltestdata.json", true));
 
   SECTION("parse_using_constructor") {
     auto base = skyr::url(test_case_data.base);

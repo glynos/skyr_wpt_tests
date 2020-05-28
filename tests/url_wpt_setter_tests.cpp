@@ -15,8 +15,8 @@
 using json = nlohmann::json;
 
 namespace {
-struct test_case {
-  test_case(const std::string &part, json object) {
+struct test_case_data {
+  test_case_data(const std::string &part, json object) {
     this->part = part;
     href = object["href"].get<std::string>();
     new_value = object["new_value"].get<std::string>();
@@ -32,7 +32,7 @@ struct test_case {
 
 };
 
-class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
+class TestCaseGenerator : public Catch::Generators::IGenerator<test_case_data> {
  public:
   explicit TestCaseGenerator(
       const std::string &filename,
@@ -47,7 +47,7 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
     it_ = begin(test_case_data_);
   }
 
-  const test_case &get() const override {
+  const test_case_data &get() const override {  // NOLINT
     assert(it_ != test_case_data_.end());
     return *it_;
   }
@@ -59,22 +59,19 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case> {
   }
 
  private:
-  std::vector<test_case> test_case_data_;
-  std::vector<test_case>::const_iterator it_;
+  std::vector<test_case_data> test_case_data_;
+  std::vector<test_case_data>::const_iterator it_;
 };
 
-Catch::Generators::GeneratorWrapper<test_case> test_case_(
-    const std::string &part, const std::string &filename) {
-  return Catch::Generators::GeneratorWrapper<test_case>(
-      std::unique_ptr<Catch::Generators::IGenerator<test_case>>(
-          new TestCaseGenerator(filename, part)));
+auto test_case(const std::string &part, const std::string &filename) {
+  return Catch::Generators::GeneratorWrapper<test_case_data>(
+      std::make_unique<TestCaseGenerator>(filename, part));
 }
 } // namespace
 
 
-
 TEST_CASE("protocol", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case_("protocol", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("protocol", "setters_tests.json"));
 
   SECTION("set protocol") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -87,7 +84,7 @@ TEST_CASE("protocol", "[web_platform]") {
 }
 
 TEST_CASE("username", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case_("username", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("username", "setters_tests.json"));
 
   SECTION("set username") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -100,7 +97,7 @@ TEST_CASE("username", "[web_platform]") {
 }
 
 TEST_CASE("password", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case_("password", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("password", "setters_tests.json"));
 
   SECTION("set password") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -113,7 +110,7 @@ TEST_CASE("password", "[web_platform]") {
 }
 
 TEST_CASE("host", "[web_platform][!mayfail]") {
-  auto test_case_data = GENERATE(test_case_("host", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("host", "setters_tests.json"));
 
   SECTION("set host") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -126,7 +123,7 @@ TEST_CASE("host", "[web_platform][!mayfail]") {
 }
 
 TEST_CASE("port", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case_("port", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("port", "setters_tests.json"));
 
   SECTION("set port") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -139,7 +136,7 @@ TEST_CASE("port", "[web_platform]") {
 }
 
 TEST_CASE("pathname", "[web_platform][!mayfail]") {
-  auto test_case_data = GENERATE(test_case_("pathname", "setters_tests.json"));
+  auto test_case_data = GENERATE(test_case("pathname", "setters_tests.json"));
 
   SECTION("set pathname") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -151,8 +148,8 @@ TEST_CASE("pathname", "[web_platform][!mayfail]") {
   }
 }
 
-TEST_CASE("search", "[web_platform][!mayfail]") {
-  auto test_case_data = GENERATE(test_case_("search", "setters_tests.json"));
+TEST_CASE("search") {
+  auto test_case_data = GENERATE(test_case("search", "setters_tests.json"));
 
   SECTION("set search") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
@@ -164,8 +161,8 @@ TEST_CASE("search", "[web_platform][!mayfail]") {
   }
 }
 
-TEST_CASE("hash", "[web_platform][!mayfail]") {
-  auto test_case_data = GENERATE(test_case_("hash", "setters_tests.json"));
+TEST_CASE("hash") {
+  auto test_case_data = GENERATE(test_case("hash", "setters_tests.json"));
 
   SECTION("set hash") {
     INFO(test_case_data.href << ", " << test_case_data.new_value);
