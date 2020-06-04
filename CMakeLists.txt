@@ -14,7 +14,7 @@ project(
         LANGUAGES CXX
 )
 
-set(skyr_WPT_TAG "merge_pr_22329" CACHE STRING "The Git tag for the WPT test data" )
+set(skyr_WPT_TAG "merge_pr_23753" CACHE STRING "The Git tag for the WPT test data" )
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 set(CMAKE_CXX_STANDARD 17)

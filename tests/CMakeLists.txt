@@ -25,7 +25,7 @@ function(skyr_create_test file_name output_dir test_name)
     set(${test_name} ${test} PARENT_SCOPE)
 endfunction()
 
-foreach (
+foreach(
         file_name
         url_web_platform_tests.cpp
         url_wpt_setter_tests.cpp
@@ -33,7 +33,7 @@ foreach (
 )
     skyr_create_test(${file_name} ${PROJECT_BINARY_DIR}/tests test)
     add_test(${test} ${PROJECT_BINARY_DIR}/tests/${test})
-endforeach ()
+endforeach()
 
 file(GLOB WPT_TEST_DATA ${wpt_SOURCE_DIR}/url/resources/*.json)
 file(COPY ${WPT_TEST_DATA} DESTINATION ${PROJECT_BINARY_DIR}/tests)

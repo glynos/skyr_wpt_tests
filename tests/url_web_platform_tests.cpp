@@ -108,6 +108,7 @@ TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
     auto instance = skyr::url(
         test_case_data.input,
         skyr::url(test_case_data.base));
+    INFO(test_case_data.input << " (base: " << test_case_data.base << ")");
     CHECK(test_case_data.href == instance.href());
     CHECK(test_case_data.protocol == instance.protocol());
     CHECK(test_case_data.username == instance.username());
@@ -125,6 +126,7 @@ TEST_CASE("test_parse_urls_using_base_urls_failures", "[web_platform]") {
   auto test_case_data = GENERATE(test_case("urltestdata.json", true));
 
   SECTION("parse_using_constructor") {
+    INFO(test_case_data.input << " (base: " << test_case_data.base << ")");
     auto base = skyr::url(test_case_data.base);
     REQUIRE_THROWS_AS(skyr::url(test_case_data.input, base), skyr::url_parse_error);
   }
