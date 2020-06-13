@@ -135,7 +135,7 @@ TEST_CASE("port", "[web_platform]") {
   }
 }
 
-TEST_CASE("pathname", "[web_platform][!mayfail]") {
+TEST_CASE("pathname", "[web_platform]") {
   auto test_case_data = GENERATE(test_case("pathname", "setters_tests.json"));
 
   SECTION("set pathname") {

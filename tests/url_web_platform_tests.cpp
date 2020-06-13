@@ -105,10 +105,10 @@ TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
   auto test_case_data = GENERATE(test_case("urltestdata.json", false));
 
   SECTION("parse_using_constructor") {
+    INFO(test_case_data.input << " (base: " << test_case_data.base << ")");
     auto instance = skyr::url(
         test_case_data.input,
         skyr::url(test_case_data.base));
-    INFO(test_case_data.input << " (base: " << test_case_data.base << ")");
     CHECK(test_case_data.href == instance.href());
     CHECK(test_case_data.protocol == instance.protocol());
     CHECK(test_case_data.username == instance.username());

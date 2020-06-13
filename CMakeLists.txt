@@ -29,13 +29,14 @@ find_package(fmt CONFIG REQUIRED)
 include(FetchContent)
 
 message(STATUS "Fetching skyr-url")
+set(skyr_WARNINGS_AS_ERRORS OFF)
 set(skyr_BUILD_TESTS OFF)
 set(skyr_BUILD_EXAMPLES OFF)
 set(skyr_BUILD_DOCS OFF)
 FetchContent_Declare(
         skyr-url
         GIT_REPOSITORY https://github.com/cpp-netlib/url
-        GIT_TAG master
+        GIT_TAG main
 )
 
 message(STATUS "Fetching platform test data")

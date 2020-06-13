@@ -8,6 +8,7 @@
 #include <catch2/catch.hpp>
 #include <nlohmann/json.hpp>
 #include <skyr/domain/domain.hpp>
+#include <skyr/percent_encoding/percent_decode.hpp>
 
 // Tests using test data from W3C
 // https://github.com/w3c/web-platform-tests/tree/master/url
@@ -73,7 +74,9 @@ TEST_CASE("to_ascii", "[web_platform]") {
   INFO("to_ascii(" << test_case_data.input << ") -> "
                    << (test_case_data.expected_output ? test_case_data.expected_output.value() : "null"));
 
-  auto output = skyr::domain_to_ascii(test_case_data.input);
+  auto percent_decoded = skyr::percent_decode(test_case_data.input);
+  REQUIRE(percent_decoded);
+  auto output = skyr::domain_to_ascii(percent_decoded.value());
   REQUIRE(output.has_value() == test_case_data.expected_output.has_value());
   if (output.has_value()) {
     CHECK(test_case_data.expected_output.value() == output.value());
