@@ -16,6 +16,11 @@
 using json = nlohmann::json;
 
 namespace {
+enum class expected_result {
+  success = 0,
+  failure
+};
+
 struct test_case_data {
   explicit test_case_data(json object) {
     input = object["input"].get<std::string>();
@@ -60,7 +65,7 @@ struct test_case_data {
 class TestCaseGenerator : public Catch::Generators::IGenerator<test_case_data> {
  public:
   explicit TestCaseGenerator(
-      const std::string &filename, bool failure) {
+      const std::string &filename, expected_result result) {
     std::ifstream fs{filename};
     json tests;
     fs >> tests;
@@ -68,7 +73,7 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case_data> {
     for (auto &&test_case_object : tests) {
       if (!test_case_object.is_string()) {
       auto data = test_case_data{test_case_object};
-        if (failure == data.failure) {
+        if (data.failure == (result == expected_result::failure)) {
           test_case_data_.emplace_back(data);
         }
       }
@@ -94,15 +99,15 @@ class TestCaseGenerator : public Catch::Generators::IGenerator<test_case_data> {
 };
 
 auto test_case(
-    const std::string &filename, bool failure) {
+    const std::string &filename, expected_result result) {
   return Catch::Generators::GeneratorWrapper<test_case_data>(
-      std::make_unique<TestCaseGenerator>(filename, failure));
+      std::make_unique<TestCaseGenerator>(filename, result));
 }
 } // namespace
 
 
-TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
-  auto test_case_data = GENERATE(test_case("urltestdata.json", false));
+TEST_CASE("test_parse_urls_using_base_urls", "[web_platform]") {
+  auto test_case_data = GENERATE(test_case("urltestdata.json", expected_result::success));
 
   SECTION("parse_using_constructor") {
     INFO(test_case_data.input << " (base: " << test_case_data.base << ")");
@@ -123,7 +128,7 @@ TEST_CASE("test_parse_urls_using_base_urls", "[web_platorm]") {
 }
 
 TEST_CASE("test_parse_urls_using_base_urls_failures", "[web_platform]") {
-  auto test_case_data = GENERATE(test_case("urltestdata.json", true));
+  auto test_case_data = GENERATE(test_case("urltestdata.json", expected_result::failure));
 
   SECTION("parse_using_constructor") {
     INFO(test_case_data.input << " (base: " << test_case_data.base << ")");

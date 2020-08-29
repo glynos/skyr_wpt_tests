@@ -76,9 +76,10 @@ TEST_CASE("to_ascii", "[web_platform]") {
 
   auto percent_decoded = skyr::percent_decode(test_case_data.input);
   REQUIRE(percent_decoded);
-  auto output = skyr::domain_to_ascii(percent_decoded.value());
-  REQUIRE(output.has_value() == test_case_data.expected_output.has_value());
-  if (output.has_value()) {
-    CHECK(test_case_data.expected_output.value() == output.value());
+  auto output = std::string{};
+  auto result = skyr::domain_to_ascii(percent_decoded.value(), &output);
+  REQUIRE(result.has_value() == test_case_data.expected_output.has_value());
+  if (result.has_value()) {
+    CHECK(test_case_data.expected_output.value() == output);
   }
 }

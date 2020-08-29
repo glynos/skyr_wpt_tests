@@ -14,7 +14,8 @@ project(
         LANGUAGES CXX
 )
 
-set(skyr_WPT_TAG "merge_pr_23753" CACHE STRING "The Git tag for the WPT test data" )
+set(skyr_URL_TAG "main" CACHE STRING "The Git tag or branch for the URL repo under test")
+set(skyr_WPT_TAG "merge_pr_23753" CACHE STRING "The Git tag or branch for the WPT test data" )
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 set(CMAKE_CXX_STANDARD 17)
@@ -36,7 +37,7 @@ set(skyr_BUILD_DOCS OFF)
 FetchContent_Declare(
         skyr-url
         GIT_REPOSITORY https://github.com/cpp-netlib/url
-        GIT_TAG main
+        GIT_TAG ${skyr_URL_TAG}
 )
 
 message(STATUS "Fetching platform test data")
